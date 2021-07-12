@@ -1,6 +1,7 @@
 module github.com/ipfs/go-merkledag
 
 require (
+	github.com/crustio/go-ipfs-encryptor v0.0.0-20210419092531-3f22dbe7ffc7
 	github.com/gogo/protobuf v1.3.1
 	github.com/ipfs/go-block-format v0.0.2
 	github.com/ipfs/go-blockservice v0.1.0

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sync"
 
+	crust "github.com/crustio/go-ipfs-encryptor/crust"
 	blocks "github.com/ipfs/go-block-format"
 	bserv "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
@@ -464,8 +465,12 @@ func parallelWalkDepth(ctx context.Context, getLinks GetLinks, root cid.Cid, vis
 
 	var visitlk sync.Mutex
 	var wg sync.WaitGroup
+	var inSealing bool = false
 
 	errChan := make(chan error)
+	if _, err := crust.GetRootFromSealContext(ctx); err == nil {
+		inSealing = true
+	}
 	fetchersCtx, cancel := context.WithCancel(ctx)
 	defer wg.Wait()
 	defer cancel()
@@ -485,6 +490,10 @@ func parallelWalkDepth(ctx context.Context, getLinks GetLinks, root cid.Cid, vis
 					shouldVisit = visit(ci, depth)
 					visitlk.Unlock()
 				} else {
+					shouldVisit = true
+				}
+
+				if inSealing {
 					shouldVisit = true
 				}
 
